@@ -2,17 +2,24 @@ package com.chung.lifusic.core.entity;
 
 import com.chung.lifusic.core.common.Role;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="user")
 public class User extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column(unique = true)
+    private String email;
 
     @Column
     private String name;
