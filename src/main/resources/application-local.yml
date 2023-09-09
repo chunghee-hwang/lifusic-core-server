@@ -27,7 +27,7 @@ logging:
     sql: error # error: Display when error occur
     org.hibernate: error
     org.springframework: error
-    com.chung.security.demo: info
+    com.chung.lifusic.core: info
 
 host:
   server:
