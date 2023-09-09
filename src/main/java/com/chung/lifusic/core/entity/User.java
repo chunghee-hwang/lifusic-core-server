@@ -1,6 +1,6 @@
 package com.chung.lifusic.core.entity;
 
-import com.chung.lifusic.core.common.Role;
+import com.chung.lifusic.core.common.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
