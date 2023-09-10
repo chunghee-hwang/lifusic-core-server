@@ -23,25 +23,32 @@ public class AuthorizationService {
     @Value("${host.server.account}")
     private String accountServerHost;
     public boolean checkAuthorization(HttpServletRequest request) {
-        String AUTH_HEADER_KEY = "Authorization";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTH_HEADER_KEY, request.getHeader(AUTH_HEADER_KEY));
-        HttpEntity<?> entity = new HttpEntity<>(headers);
         final Role requiredRole = getRequiredRole(request.getRequestURI());
+        final String AUTH_HEADER_KEY = "Authorization";
+        final String authHeader = request.getHeader(AUTH_HEADER_KEY);
+        final UserDto userDto = getAuthenticatedUser(authHeader);
+        if (userDto == null) {
+            return false;
+        }
+        String role = userDto.getRole();
+        if (role == null) {
+            return false;
+        }
+        return Role.valueOf(role.toUpperCase()) == requiredRole;
+    }
+
+    public UserDto getAuthenticatedUser(String authHeader) {
+        final String AUTH_HEADER_KEY = "Authorization";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTH_HEADER_KEY, authHeader);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
         try {
             ResponseEntity<UserDto> responseEntity = restTemplate.exchange(accountServerHost + "/api/account/me", HttpMethod.GET, entity, UserDto.class);
-            UserDto userDto = responseEntity.getBody();
-            if (userDto == null) {
-                return false;
-            }
-            String roleFromResponse = userDto.getRole();
-            if (roleFromResponse == null) {
-                return false;
-            }
-            return Role.valueOf(roleFromResponse.toUpperCase()) == requiredRole;
+            return responseEntity.getBody();
         } catch (Exception exception) {
             log.error("fail to fetch user data: {}", exception.getMessage());
-            return false;
+            return null;
         }
     }
 

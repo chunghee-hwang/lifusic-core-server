@@ -23,4 +23,7 @@ public class File extends BaseEntity{
 
     @Column
     private String contentType;
+
+    @Column
+    private int size;
 }

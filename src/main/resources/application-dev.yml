@@ -12,6 +12,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  servlet:
+    multipart:
+      maxFileSize: 10MB # 파일 하나의 최대 크기
+      maxRequestSize: 30MB  # 한 번에 최대 업로드 가능 용량
+
+  kafka:
+    bootstrap-servers: kafka1:9092,kafka2:9093
+    consumer:
+      group-id: group1
+      auto-offset-reset: earliest
 
 jasypt:
   encryptor:
@@ -30,3 +40,8 @@ host:
   server:
     account:
       http://account-server:8080
+
+file:
+  upload:
+    directory:
+      /storage
