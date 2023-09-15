@@ -1,6 +1,8 @@
 package com.chung.lifusic.core.controller;
 
-import com.chung.lifusic.core.service.AuthorizationService;
+import com.chung.lifusic.core.common.annotations.AuthenticatedUser;
+import com.chung.lifusic.core.common.annotations.AuthorizationValid;
+import com.chung.lifusic.core.common.enums.Role;
 import com.chung.lifusic.core.service.FileStorageService;
 import com.chung.lifusic.core.service.KafkaProducerService;
 import dto.CommonResponseDto;
@@ -8,27 +10,29 @@ import dto.FileCreateRequestDto;
 import dto.StoreTempFileResponseDto;
 import dto.UserDto;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminController {
-    private final AuthorizationService authorizationService;
     private final FileStorageService fileStorageService;
     private final KafkaProducerService kafkaProducerService;
     @PostMapping("/music")
+    @AuthorizationValid(role=Role.ADMIN)
     public ResponseEntity<CommonResponseDto> addMusic(
-            @RequestHeader("Authorization") String authHeader,
-            @NotBlank @RequestPart(value = "musicName") String musicName,
+            @AuthenticatedUser() UserDto authUser,
+            @RequestPart(value = "musicName") @NotBlank String musicName,
             @RequestPart(value = "musicFile") MultipartFile musicFile,
             @RequestPart(value = "thumbnailImageFile", required = false) MultipartFile thumbnailImageFile
     ) {
-        UserDto user = authorizationService.getAuthenticatedUser(authHeader);
-
         // 파일 임시 저장
         StoreTempFileResponseDto musicStoreResponse = fileStorageService.storeFileToTempDirWithRandomName(musicFile);
         FileCreateRequestDto.File musicTempFile = FileCreateRequestDto.File.builder()
@@ -50,7 +54,7 @@ public class AdminController {
 
         // 카프카에게 파일 서버가 처리하도록 던짐
         kafkaProducerService.produceCreateFileRequest(FileCreateRequestDto.builder()
-                        .requestUserId(user.getId())
+                        .requestUserId(authUser.getId())
                         .musicName(musicName)
                         .musicTempFile(musicTempFile)
                         .thumbnailTempFile(thumbnailTempFile)

@@ -22,11 +22,8 @@ public class AuthorizationService {
 
     @Value("${host.server.account}")
     private String accountServerHost;
-    public boolean checkAuthorization(HttpServletRequest request) {
-        final Role requiredRole = getRequiredRole(request.getRequestURI());
-        final String AUTH_HEADER_KEY = "Authorization";
-        final String authHeader = request.getHeader(AUTH_HEADER_KEY);
-        final UserDto userDto = getAuthenticatedUser(authHeader);
+    public boolean checkAuthorization(HttpServletRequest request, Role requiredRole) {
+        final UserDto userDto = getAuthenticatedUser(request);
         if (userDto == null) {
             return false;
         }
@@ -37,8 +34,9 @@ public class AuthorizationService {
         return Role.valueOf(role.toUpperCase()) == requiredRole;
     }
 
-    public UserDto getAuthenticatedUser(String authHeader) {
+    public UserDto getAuthenticatedUser(HttpServletRequest request) {
         final String AUTH_HEADER_KEY = "Authorization";
+        final String authHeader = getAuthHeaderFromRequest(request);
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTH_HEADER_KEY, authHeader);
         HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -52,17 +50,8 @@ public class AuthorizationService {
         }
     }
 
-    // api uri가 어떻게 시작하느냐에 따라서 어떤 권한을 체크할 지 결정
-    private Role getRequiredRole(String requestedURI) {
-        final String ADMIN_URL = "/api/admin";
-        //        final String CUSTOMER_URL = "/api/music";
-
-        Role requiredRole;
-        if (requestedURI.startsWith(ADMIN_URL)) {
-            requiredRole = Role.ADMIN; // 아티스트 권한
-        } else {
-            requiredRole = Role.CUSTOMER; // 일반 사용자 권한
-        }
-        return requiredRole;
+    private String getAuthHeaderFromRequest(HttpServletRequest request) {
+        final String AUTH_HEADER_KEY = "Authorization";
+        return request.getHeader(AUTH_HEADER_KEY);
     }
 }
