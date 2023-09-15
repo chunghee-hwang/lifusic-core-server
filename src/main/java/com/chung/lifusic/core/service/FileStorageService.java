@@ -1,5 +1,6 @@
 package com.chung.lifusic.core.service;
 
+import com.chung.lifusic.core.common.utils.StringUtil;
 import com.chung.lifusic.core.exception.FileStorageException;
 import dto.StoreTempFileResponseDto;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Date;
-import java.util.Random;
 
 @Service
 public class FileStorageService {
@@ -22,10 +21,6 @@ public class FileStorageService {
 
     /**
      * 파일을 temp directory에 저장
-     *
-     * @param file
-     * @param fileName
-     * @return
      */
     public StoreTempFileResponseDto storeFileToTempDir(MultipartFile file, String fileName) {
         try {
@@ -47,24 +42,11 @@ public class FileStorageService {
     }
 
     public StoreTempFileResponseDto storeFileToTempDirWithRandomName(MultipartFile file) {
-        String randomName = getRandomFileName();
+        String randomName = StringUtil.getRandomString(5);
         return storeFileToTempDir(file, randomName);
     }
 
     private Path getTempFileDirectoryPath() {
         return Paths.get(tempUploadDirectory).toAbsolutePath().normalize();
-    }
-
-    private String getRandomFileName() {
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 5;
-        Random random = new Random();
-
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-        return generatedString + new Date().getTime();
     }
 }

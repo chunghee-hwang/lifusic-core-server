@@ -5,12 +5,8 @@ import com.chung.lifusic.core.common.annotations.AuthorizationValid;
 import com.chung.lifusic.core.common.enums.Role;
 import com.chung.lifusic.core.service.FileStorageService;
 import com.chung.lifusic.core.service.KafkaProducerService;
-import dto.CommonResponseDto;
-import dto.FileCreateRequestDto;
-import dto.StoreTempFileResponseDto;
-import dto.UserDto;
+import dto.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,21 +31,11 @@ public class AdminController {
     ) {
         // 파일 임시 저장
         StoreTempFileResponseDto musicStoreResponse = fileStorageService.storeFileToTempDirWithRandomName(musicFile);
-        FileCreateRequestDto.File musicTempFile = FileCreateRequestDto.File.builder()
-                .tempFilePath(musicStoreResponse.getTempFilePath())
-                .contentType(musicStoreResponse.getContentType())
-                .originalFileName(musicStoreResponse.getOriginalFileName())
-                .size(musicStoreResponse.getFileSize())
-                .build();
-        FileCreateRequestDto.File thumbnailTempFile = null;
+        FileDto musicTempFile = musicStoreResponse.toFileDto();
+        FileDto thumbnailTempFile = null;
         if (thumbnailImageFile != null) {
             StoreTempFileResponseDto musicThumbnailStoreResponse = fileStorageService.storeFileToTempDirWithRandomName(thumbnailImageFile);
-            thumbnailTempFile = FileCreateRequestDto.File.builder()
-                    .tempFilePath(musicThumbnailStoreResponse.getTempFilePath())
-                    .contentType(musicThumbnailStoreResponse.getContentType())
-                    .originalFileName(musicThumbnailStoreResponse.getOriginalFileName())
-                    .size(musicThumbnailStoreResponse.getFileSize())
-                .build();
+            thumbnailTempFile = musicThumbnailStoreResponse.toFileDto();
         }
 
         // 카프카에게 파일 서버가 처리하도록 던짐
