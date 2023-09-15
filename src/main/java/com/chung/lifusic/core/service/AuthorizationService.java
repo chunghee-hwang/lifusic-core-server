@@ -1,7 +1,7 @@
 package com.chung.lifusic.core.service;
 
 import com.chung.lifusic.core.common.enums.Role;
-import dto.UserDto;
+import com.chung.lifusic.core.dto.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

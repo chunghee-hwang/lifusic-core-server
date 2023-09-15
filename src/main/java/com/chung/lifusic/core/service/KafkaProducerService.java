@@ -1,7 +1,7 @@
 package com.chung.lifusic.core.service;
 
 import com.chung.lifusic.core.dto.FileDeleteRequestDto;
-import dto.FileCreateRequestDto;
+import com.chung.lifusic.core.dto.FileCreateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;

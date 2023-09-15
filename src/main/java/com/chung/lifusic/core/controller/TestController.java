@@ -1,7 +1,5 @@
 package com.chung.lifusic.core.controller;
 
-import com.chung.lifusic.core.common.annotations.AuthorizationValid;
-import com.chung.lifusic.core.common.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

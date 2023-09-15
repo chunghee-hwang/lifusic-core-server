@@ -1,4 +1,4 @@
-package dto;
+package com.chung.lifusic.core.dto;
 
 import lombok.Builder;
 import lombok.Data;

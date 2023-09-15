@@ -3,9 +3,9 @@ package com.chung.lifusic.core.controller;
 import com.chung.lifusic.core.common.annotations.AuthenticatedUser;
 import com.chung.lifusic.core.common.annotations.AuthorizationValid;
 import com.chung.lifusic.core.common.enums.Role;
+import com.chung.lifusic.core.dto.*;
 import com.chung.lifusic.core.service.FileStorageService;
 import com.chung.lifusic.core.service.KafkaProducerService;
-import dto.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +30,10 @@ public class AdminController {
             @RequestPart(value = "thumbnailImageFile", required = false) MultipartFile thumbnailImageFile
     ) {
         // 파일 임시 저장
-        StoreTempFileResponseDto musicStoreResponse = fileStorageService.storeFileToTempDirWithRandomName(musicFile);
-        FileDto musicTempFile = musicStoreResponse.toFileDto();
-        FileDto thumbnailTempFile = null;
+        FileDto musicTempFile = fileStorageService.storeFileToTempDirWithRandomName(musicFile);
+        FileDto thumbnailTempFileDto = null;
         if (thumbnailImageFile != null) {
-            StoreTempFileResponseDto musicThumbnailStoreResponse = fileStorageService.storeFileToTempDirWithRandomName(thumbnailImageFile);
-            thumbnailTempFile = musicThumbnailStoreResponse.toFileDto();
+            thumbnailTempFileDto = fileStorageService.storeFileToTempDirWithRandomName(thumbnailImageFile);
         }
 
         // 카프카에게 파일 서버가 처리하도록 던짐
@@ -43,7 +41,7 @@ public class AdminController {
                         .requestUserId(authUser.getId())
                         .musicName(musicName)
                         .musicTempFile(musicTempFile)
-                        .thumbnailTempFile(thumbnailTempFile)
+                        .thumbnailTempFile(thumbnailTempFileDto)
                 .build());
 
         return ResponseEntity.ok(CommonResponseDto.builder().success(true).build());

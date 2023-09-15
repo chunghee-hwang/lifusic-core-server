@@ -1,8 +1,8 @@
 package com.chung.lifusic.core.service;
 
 import com.chung.lifusic.core.entity.Music;
-import dto.CommonResponseDto;
-import dto.FileCreateResponseDto;
+import com.chung.lifusic.core.dto.CommonResponseDto;
+import com.chung.lifusic.core.dto.FileCreateResponseDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
