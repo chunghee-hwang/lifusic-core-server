@@ -3,7 +3,7 @@ package com.chung.lifusic.core.dto;
 import lombok.*;
 
 @Data
-public class FileResponseDto {
+public class FileCreateResponseDto {
     private boolean isSuccess;
     private Long requestUserId; // 요청한 사람 아이디
     private Content content;
