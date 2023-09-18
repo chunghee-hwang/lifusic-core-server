@@ -13,4 +13,5 @@ public class MusicDto {
     private Long id;
     private Long musicFileId;
     private Long thumbnailFileId;
+    private Long artistId;
 }

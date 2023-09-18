@@ -7,8 +7,10 @@ import com.chung.lifusic.core.dto.*;
 import com.chung.lifusic.core.service.AdminMusicService;
 import com.chung.lifusic.core.service.FileStorageService;
 import com.chung.lifusic.core.service.KafkaProducerService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,5 +63,15 @@ public class AdminController {
                         .thumbnailFileId(music.getThumbnailFileId())
                 .build());
         return ResponseEntity.ok(CommonResponseDto.builder().success(true).build());
+    }
+
+    @GetMapping(path = "/music/{musicId}/file", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @AuthorizationValid(role=Role.ADMIN)
+    public void downloadMusicFile(
+            @AuthenticatedUser() UserDto authUser,
+            @PathVariable Long musicId,
+            HttpServletResponse response
+    ) {
+        this.adminMusicService.downloadMusicFile(authUser.getId(), musicId, response);
     }
 }

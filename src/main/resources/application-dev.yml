@@ -42,6 +42,8 @@ host:
   server:
     account:
       http://account-server:8080
+    file:
+      http://file-server:6060
 
 file:
   upload:

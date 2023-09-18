@@ -42,7 +42,8 @@ host:
   server:
     account:
       http://localhost:8080
-
+    file:
+      http://localhost:6060
 file:
   upload:
     directory:
