@@ -21,7 +21,7 @@ public class Music extends BaseEntity{
     @Column
     private String artistName;
 
-    @OneToOne
+    @ManyToOne
     private User artist;
 
     @OneToOne

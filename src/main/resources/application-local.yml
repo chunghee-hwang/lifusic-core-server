@@ -46,4 +46,4 @@ host:
 file:
   upload:
     directory:
-      ${user.home}/Projects/lifusic-folders/lifusic/storage
+      ${user.home}/Projects/lifusic-folders/lifusic/files/temp

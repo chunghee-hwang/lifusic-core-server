@@ -1,13 +1,13 @@
 package com.chung.lifusic.core.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "file")
 public class File extends BaseEntity{
@@ -25,5 +25,5 @@ public class File extends BaseEntity{
     private String contentType;
 
     @Column
-    private int size;
+    private Long size;
 }

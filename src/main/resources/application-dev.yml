@@ -1,3 +1,5 @@
+server:
+  port: 9090
 
 spring:
   datasource:
@@ -44,4 +46,4 @@ host:
 file:
   upload:
     directory:
-      /storage
+      ${user.home}/files/temp

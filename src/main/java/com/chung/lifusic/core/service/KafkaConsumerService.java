@@ -1,36 +1,46 @@
 package com.chung.lifusic.core.service;
 
-import com.chung.lifusic.core.entity.Music;
 import com.chung.lifusic.core.dto.CommonResponseDto;
-import com.chung.lifusic.core.dto.FileCreateResponseDto;
+import com.chung.lifusic.core.dto.FileResponseDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import static com.chung.lifusic.core.common.constants.kafka.GROUP_ID;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class KafkaConsumerService {
     private final SimpMessagingTemplate messagingTemplate;
-
-    @KafkaListener(topics = "CREATE_FILE_COMPLETE")
-    @Transactional
-    public void consumeFileCreateComplete(ConsumerRecord<String, Object> record) {
-        FileCreateResponseDto response = (FileCreateResponseDto) record.value();
-        final boolean isSuccess = response.isSuccess();
-        if (isSuccess) {
-            Music music = Music.builder().build();
+    private final AdminMusicService adminMusicService;
+    @KafkaListener(topics = "CREATE_FILE_COMPLETE", groupId = GROUP_ID)
+    public void consumeFileCreateComplete(ConsumerRecord<String, String> record) throws JsonProcessingException {
+        FileResponseDto response = new ObjectMapper().readValue(record.value(), FileResponseDto.class);
+        boolean isSuccess = false;
+        if (response.isSuccess()) {
+            try {
+                adminMusicService.createMusic(response);
+                isSuccess = true;
+            } catch (Exception exception) {
+                log.error("Fail to create music: {}", exception.getMessage());
+            }
         }
+
         messagingTemplate.convertAndSend(
-                "/topic/post/admin/music" + response.getContent().getRequestUserId(),
+                "/topic/post/admin/music" + response.getRequestUserId(),
                 CommonResponseDto.builder().success(isSuccess).build());
     }
 
-    @KafkaListener(topics = "DELETE_FILE_COMPLETE")
+    @KafkaListener(topics = "DELETE_FILE_COMPLETE", groupId = GROUP_ID)
     @Transactional
-    public void consumeFileDeleteComplete(ConsumerRecord<String, Object> record) {
+    public void consumeFileDeleteComplete(ConsumerRecord<String, String> record) {
 
     }
 }

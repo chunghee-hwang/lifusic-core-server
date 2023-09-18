@@ -42,7 +42,7 @@ public class FileStorageService {
     }
 
     public FileDto storeFileToTempDirWithRandomName(MultipartFile file) {
-        String randomName = StringUtil.getRandomString(5);
+        String randomName = StringUtil.getUniqueString(5);
         return storeFileToTempDir(file, randomName);
     }
 
