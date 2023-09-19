@@ -74,4 +74,13 @@ public class AdminController {
     ) {
         this.adminMusicService.downloadMusicFile(authUser.getId(), musicId, response);
     }
+
+    @GetMapping("/musics")
+    @AuthorizationValid(role=Role.ADMIN)
+    public ResponseEntity<GetArtistMusicsResponseDto> getMyMusics(
+            @AuthenticatedUser() UserDto authUser,
+            GetMusicsRequestDto request
+    ) {
+        return ResponseEntity.ok(adminMusicService.getMusicsByArtistId(authUser.getId(), request));
+    }
 }

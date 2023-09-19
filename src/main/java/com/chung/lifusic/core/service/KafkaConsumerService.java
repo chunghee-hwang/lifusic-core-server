@@ -13,7 +13,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import static com.chung.lifusic.core.common.constants.kafka.GROUP_ID;
+import static com.chung.lifusic.core.common.constants.Kafka.GROUP_ID;
 
 @Service
 @RequiredArgsConstructor

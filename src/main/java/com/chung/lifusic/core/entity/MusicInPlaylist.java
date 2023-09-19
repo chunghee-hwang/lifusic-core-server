@@ -16,9 +16,9 @@ public class MusicInPlaylist extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Music music;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Playlist playlist;
 }

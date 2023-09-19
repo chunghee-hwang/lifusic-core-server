@@ -44,7 +44,8 @@ host:
       http://account-server:8080
     file:
       http://file-server:6060
-
+    gateway:
+      http://gateway:5050
 file:
   upload:
     directory:

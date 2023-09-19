@@ -44,6 +44,8 @@ host:
       http://localhost:8080
     file:
       http://localhost:6060
+    gateway:
+      http://localhost:5050
 file:
   upload:
     directory:

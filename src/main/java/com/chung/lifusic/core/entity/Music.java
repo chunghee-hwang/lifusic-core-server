@@ -21,12 +21,12 @@ public class Music extends BaseEntity{
     @Column
     private String artistName;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     private User artist;
 
-    @OneToOne
+    @OneToOne(fetch=FetchType.LAZY)
     private File musicFile;
 
-    @OneToOne
+    @OneToOne(fetch=FetchType.LAZY)
     private File thumbnailImageFile;
 }

@@ -1,6 +1,8 @@
 package com.chung.lifusic.core.service;
 
 import com.chung.lifusic.core.dto.FileCreateResponseDto;
+import com.chung.lifusic.core.dto.GetMusicsRequestDto;
+import com.chung.lifusic.core.dto.GetArtistMusicsResponseDto;
 import com.chung.lifusic.core.dto.MusicDto;
 import com.chung.lifusic.core.entity.File;
 import com.chung.lifusic.core.entity.Music;
@@ -14,6 +16,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -22,10 +26,10 @@ import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 // 아티스트 전용 서비스
@@ -39,6 +43,9 @@ public class AdminMusicService {
 
     @Value("${host.server.file}")
     private String fileServerHost;
+
+    @Value("${host.server.gateway}")
+    private String gatewayHost;
 
     @Transactional
     public void createMusic(FileCreateResponseDto response) {
@@ -109,5 +116,31 @@ public class AdminMusicService {
         };
         // file 서버에서 파일을 가져옴
         restTemplate.execute(URI.create(this.fileServerHost + "/api/file/" + musicFile.getId()), HttpMethod.GET, requestCallback, responseExtractor);
+    }
+
+    public GetArtistMusicsResponseDto getMusicsByArtistId(Long artistId, GetMusicsRequestDto request) {
+        Pageable page = request.getPage("updatedDate");
+        String keyword = request.getKeyword();
+        Page<Music> musicsPage;
+        if (keyword == null) {
+            musicsPage = musicRepository.findMusics(artistId, page);
+        } else {
+            musicsPage = musicRepository.findMusics(artistId, keyword, page);
+        }
+        List<GetArtistMusicsResponseDto.Music> musics= musicsPage.getContent().stream().map(music-> {
+            Long thumbnailImageFileId = music.getThumbnailImageFile().getId();
+            String thumbnailImageUrl = gatewayHost + "/api/file/" + thumbnailImageFileId;
+            return GetArtistMusicsResponseDto.Music
+                    .builder()
+                    .id(music.getId())
+                    .name(music.getName())
+                    .thumbnailImageUrl(thumbnailImageUrl)
+                    .build();
+        }).toList();
+        return GetArtistMusicsResponseDto.builder()
+                .musics(musics)
+                .page(musicsPage.getNumber() + 1)
+                .totalPage(musicsPage.getTotalPages())
+                .build();
     }
 }
