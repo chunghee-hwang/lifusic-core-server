@@ -47,4 +47,6 @@ host:
 file:
   upload:
     directory:
-      ${user.home}/Projects/lifusic-folders/lifusic/files/temp
+      ${user.home}/Projects/lifusic-folders/lifusic/files
+    temp-directory-name:
+      temp

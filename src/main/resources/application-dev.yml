@@ -49,3 +49,5 @@ file:
   upload:
     directory:
       /opt/lifusic/files
+    temp-directory-name:
+      temp
