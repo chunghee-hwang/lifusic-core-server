@@ -1,5 +1,6 @@
 package com.chung.lifusic.core.service;
 
+import com.chung.lifusic.core.common.utils.PageUtil;
 import com.chung.lifusic.core.dto.FileCreateResponseDto;
 import com.chung.lifusic.core.dto.GetMusicsRequestDto;
 import com.chung.lifusic.core.dto.GetArtistMusicsResponseDto;
@@ -120,7 +121,13 @@ public class AdminMusicService {
     }
 
     public GetArtistMusicsResponseDto getMusicsByArtistId(Long artistId, GetMusicsRequestDto request) {
-        Pageable page = request.getPage("name");
+        Pageable page = PageUtil.getPage(
+                request.getPage(),
+                request.getLimit(),
+                request.getOrderBy(),
+                request.getOrderDirection(),
+                "name"
+        );
         String keyword = request.getKeyword();
         Page<Music> musicsPage;
         if (StringUtils.hasText(keyword)) {
@@ -128,7 +135,7 @@ public class AdminMusicService {
         } else {
             musicsPage = musicRepository.findMusics(artistId, keyword, page);
         }
-        List<GetArtistMusicsResponseDto.Music> musics= musicsPage.getContent().stream().map(music-> GetArtistMusicsResponseDto.Music
+        List<GetArtistMusicsResponseDto.Music> musics = musicsPage.getContent().stream().map(music -> GetArtistMusicsResponseDto.Music
                 .builder()
                 .id(music.getId())
                 .name(music.getName())

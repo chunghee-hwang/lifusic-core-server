@@ -1,5 +1,6 @@
 package com.chung.lifusic.core.service;
 
+import com.chung.lifusic.core.common.utils.PageUtil;
 import com.chung.lifusic.core.dto.GetMusicsRequestDto;
 import com.chung.lifusic.core.dto.SearchMusicResponseDto;
 import com.chung.lifusic.core.entity.Music;
@@ -28,8 +29,13 @@ public class CustomerMusicService {
      * 고객이 음악 검색
      */
     public SearchMusicResponseDto searchMusics(GetMusicsRequestDto request) {
-        Pageable page = request.getPage("name", "artistName");
-
+        Pageable page = PageUtil.getPage(
+                request.getPage(),
+                request.getLimit(),
+                request.getOrderBy(),
+                request.getOrderDirection(),
+                "name", "artistName"
+        );
         Page<Music> musicsPage;
         String keyword = request.getKeyword();
         if (StringUtils.hasText(keyword)) {
