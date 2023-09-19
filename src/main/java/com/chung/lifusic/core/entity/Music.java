@@ -29,4 +29,15 @@ public class Music extends BaseEntity{
 
     @OneToOne(fetch=FetchType.LAZY)
     private File thumbnailImageFile;
+
+    public String getThumbnailImageUrl(String gatewayHost) {
+        if (this.thumbnailImageFile == null) {
+            return null;
+        }
+        Long fileId = this.thumbnailImageFile.getId();
+        if (fileId == null) {
+            return null;
+        }
+        return gatewayHost + "/api/file/" + fileId;
+    }
 }

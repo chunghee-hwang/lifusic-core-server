@@ -22,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
@@ -42,10 +43,10 @@ public class AdminMusicService {
     private final RestTemplate restTemplate;
 
     @Value("${host.server.file}")
-    private String fileServerHost;
+    private String FILE_SERVER_HOST;
 
     @Value("${host.server.gateway}")
-    private String gatewayHost;
+    private String GATEWAY_HOST;
 
     @Transactional
     public void createMusic(FileCreateResponseDto response) {
@@ -115,28 +116,24 @@ public class AdminMusicService {
             return null;
         };
         // file 서버에서 파일을 가져옴
-        restTemplate.execute(URI.create(this.fileServerHost + "/api/file/" + musicFile.getId()), HttpMethod.GET, requestCallback, responseExtractor);
+        restTemplate.execute(URI.create(this.FILE_SERVER_HOST + "/api/file/" + musicFile.getId()), HttpMethod.GET, requestCallback, responseExtractor);
     }
 
     public GetArtistMusicsResponseDto getMusicsByArtistId(Long artistId, GetMusicsRequestDto request) {
-        Pageable page = request.getPage("updatedDate");
+        Pageable page = request.getPage("name");
         String keyword = request.getKeyword();
         Page<Music> musicsPage;
-        if (keyword == null) {
+        if (StringUtils.hasText(keyword)) {
             musicsPage = musicRepository.findMusics(artistId, page);
         } else {
             musicsPage = musicRepository.findMusics(artistId, keyword, page);
         }
-        List<GetArtistMusicsResponseDto.Music> musics= musicsPage.getContent().stream().map(music-> {
-            Long thumbnailImageFileId = music.getThumbnailImageFile().getId();
-            String thumbnailImageUrl = gatewayHost + "/api/file/" + thumbnailImageFileId;
-            return GetArtistMusicsResponseDto.Music
-                    .builder()
-                    .id(music.getId())
-                    .name(music.getName())
-                    .thumbnailImageUrl(thumbnailImageUrl)
-                    .build();
-        }).toList();
+        List<GetArtistMusicsResponseDto.Music> musics= musicsPage.getContent().stream().map(music-> GetArtistMusicsResponseDto.Music
+                .builder()
+                .id(music.getId())
+                .name(music.getName())
+                .thumbnailImageUrl(music.getThumbnailImageUrl(GATEWAY_HOST))
+                .build()).toList();
         return GetArtistMusicsResponseDto.builder()
                 .musics(musics)
                 .page(musicsPage.getNumber() + 1)

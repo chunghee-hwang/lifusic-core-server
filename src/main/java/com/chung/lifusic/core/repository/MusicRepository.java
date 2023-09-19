@@ -24,7 +24,14 @@ public interface MusicRepository extends JpaRepository<Music, Long> {
     )
     Page<Music> findMusics(Long artistId, String keyword, Pageable page);
 
-    // 고객이 음악을 키워드로 검색
+
+    // 고객이 음악을 검색
+    @Query(value = "select m from Music m " +
+            "left join fetch m.thumbnailImageFile ",
+            countQuery = "select count(m.id) from Music m "
+    )
+    Page<Music> searchMusics(Pageable page);
+
     @Query(value = "select m from Music m " +
             "left join fetch m.thumbnailImageFile " +
             "where m.artistName = :keyword or m.name like %:keyword%"
