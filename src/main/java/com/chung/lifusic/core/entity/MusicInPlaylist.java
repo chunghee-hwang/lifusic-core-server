@@ -1,13 +1,13 @@
 package com.chung.lifusic.core.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "musicInPlaylist")
 public class MusicInPlaylist extends BaseEntity{

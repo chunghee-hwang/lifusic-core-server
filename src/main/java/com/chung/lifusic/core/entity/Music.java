@@ -9,7 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "music")
+@Table(name = "music", indexes = {
+        // 음악 이름 또는 아티스트 이름으로 검색 시 성능 개선을 위해 인덱스 추가
+        @Index(name = "idxName", columnList = "name ASC"),
+        @Index(name="idxArtistName", columnList = "artistName ASC")
+})
 public class Music extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

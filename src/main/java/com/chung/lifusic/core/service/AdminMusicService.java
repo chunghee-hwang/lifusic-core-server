@@ -1,8 +1,7 @@
 package com.chung.lifusic.core.service;
 
-import com.chung.lifusic.core.common.utils.PageUtil;
 import com.chung.lifusic.core.dto.FileCreateResponseDto;
-import com.chung.lifusic.core.dto.GetMusicsRequestDto;
+import com.chung.lifusic.core.dto.SearchRequestDto;
 import com.chung.lifusic.core.dto.GetArtistMusicsResponseDto;
 import com.chung.lifusic.core.dto.MusicDto;
 import com.chung.lifusic.core.entity.File;
@@ -120,14 +119,8 @@ public class AdminMusicService {
         restTemplate.execute(URI.create(this.FILE_SERVER_HOST + "/api/file/" + musicFile.getId()), HttpMethod.GET, requestCallback, responseExtractor);
     }
 
-    public GetArtistMusicsResponseDto getMusicsByArtistId(Long artistId, GetMusicsRequestDto request) {
-        Pageable page = PageUtil.getPage(
-                request.getPage(),
-                request.getLimit(),
-                request.getOrderBy(),
-                request.getOrderDirection(),
-                "name"
-        );
+    public GetArtistMusicsResponseDto getMusicsByArtistId(Long artistId, SearchRequestDto request) {
+        Pageable page = request.toPage("name");
         String keyword = request.getKeyword();
         Page<Music> musicsPage;
         if (StringUtils.hasText(keyword)) {

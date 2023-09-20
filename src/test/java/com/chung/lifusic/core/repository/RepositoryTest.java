@@ -15,6 +15,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 @SpringBootTest
 @ActiveProfiles("local")
 public class RepositoryTest {
@@ -54,5 +56,11 @@ public class RepositoryTest {
     public void findPlaylists() {
         User user = userRepository.findByEmail("test@email.com").orElseThrow();
         List<Playlist> playlists = playlistRepository.getPlaylistsByOwnerId(user.getId());
+    }
+
+    @Test
+    public void existsByMusicId() {
+        boolean isExist = musicInPlaylistRepository.existsByMusicId(1L);
+        assertFalse(isExist);
     }
 }

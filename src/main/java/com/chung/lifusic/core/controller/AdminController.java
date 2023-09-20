@@ -33,7 +33,7 @@ public class AdminController {
         // 파일 임시 저장
         FileDto musicTempFile = fileStorageService.storeFileToTempDirWithRandomName(musicFile);
         FileDto thumbnailTempFileDto = null;
-        if (thumbnailImageFile != null) {
+        if (!thumbnailImageFile.isEmpty()) {
             thumbnailTempFileDto = fileStorageService.storeFileToTempDirWithRandomName(thumbnailImageFile);
         }
 
@@ -79,7 +79,7 @@ public class AdminController {
     @AuthorizationValid(role=Role.ADMIN)
     public ResponseEntity<GetArtistMusicsResponseDto> getMyMusics(
             @AuthenticatedUser() UserDto authUser,
-            GetMusicsRequestDto request
+            SearchRequestDto request
     ) {
         return ResponseEntity.ok(adminMusicService.getMusicsByArtistId(authUser.getId(), request));
     }

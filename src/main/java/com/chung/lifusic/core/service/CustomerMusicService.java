@@ -1,23 +1,23 @@
 package com.chung.lifusic.core.service;
 
 import com.chung.lifusic.core.common.utils.DateUtil;
-import com.chung.lifusic.core.common.utils.PageUtil;
 import com.chung.lifusic.core.dto.*;
 import com.chung.lifusic.core.entity.Music;
 import com.chung.lifusic.core.entity.MusicInPlaylist;
 import com.chung.lifusic.core.entity.Playlist;
 import com.chung.lifusic.core.entity.User;
 import com.chung.lifusic.core.exception.ForbiddenException;
+import com.chung.lifusic.core.exception.NotFoundException;
 import com.chung.lifusic.core.repository.MusicInPlaylistRepository;
 import com.chung.lifusic.core.repository.MusicRepository;
 import com.chung.lifusic.core.repository.PlaylistRepository;
 import com.chung.lifusic.core.repository.UserRepository;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -39,14 +39,8 @@ public class CustomerMusicService {
     /*
      * 고객이 음악 검색
      */
-    public SearchMusicResponseDto searchMusics(GetMusicsRequestDto request) {
-        Pageable page = PageUtil.getPage(
-                request.getPage(),
-                request.getLimit(),
-                request.getOrderBy(),
-                request.getOrderDirection(),
-                "name", "artistName"
-        );
+    public SearchMusicResponseDto searchMusics(SearchRequestDto request) {
+        Pageable page = request.toPage("name", "artistName");
         Page<Music> musicsPage;
         String keyword = request.getKeyword();
         if (StringUtils.hasText(keyword)) {
@@ -70,17 +64,17 @@ public class CustomerMusicService {
     /**
      * 플레이리스트 생성
      */
-    public CreatePlaylistResponseDto createPlaylist(UserDto userDto, @Nullable String playlistName) {
+    public CreatePlaylistResponseDto createPlaylist(Long userId, CreatePlaylistRequestDto request) {
         User user;
         try {
-            user = userRepository.findById(userDto.getId()).orElseThrow();
+            user = userRepository.findById(userId).orElseThrow();
         } catch (NoSuchElementException exception) {
             throw new ForbiddenException();
         }
 
         Playlist playlist = playlistRepository.save(Playlist.builder()
                 .owner(user)
-                .name(playlistName)
+                .name(request.getName())
                 .build());
 
         return CreatePlaylistResponseDto.builder()
@@ -92,8 +86,8 @@ public class CustomerMusicService {
     /**
      * 고객의 모든 플레이리스트 가져오기
      */
-    public List<PlaylistDto> getAllPlaylistResponse(UserDto userDto) {
-        List<Playlist> playlists = playlistRepository.getPlaylistsByOwnerId(userDto.getId());
+    public List<PlaylistDto> getAllPlaylist(Long userId) {
+        List<Playlist> playlists = playlistRepository.getPlaylistsByOwnerId(userId);
         return playlists.stream().map(playlist -> PlaylistDto.builder()
                 .id(playlist.getId())
                 .name(playlist.getName())
@@ -108,15 +102,28 @@ public class CustomerMusicService {
         Long musicId = request.getMusicId();
         Long playlistId = request.getPlaylistId();
 
-        Music music = musicRepository.findById(musicId).orElseThrow();
-        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow();
+        Music music;
+        Playlist playlist;
 
-        MusicInPlaylist musicInPlaylist = MusicInPlaylist.builder()
-                .music(music)
-                .playlist(playlist)
-                .build();
+        try {
+            music = musicRepository.findById(musicId).orElseThrow();
+            playlist = playlistRepository.findById(playlistId).orElseThrow();
+        } catch (NoSuchElementException exception) {
+            throw new NotFoundException();
+        }
 
-        musicInPlaylistRepository.save(musicInPlaylist);
+        // 이미 재생 목록에 있는 음악인 지 확인. 있으면 추가 안 함
+        boolean alreadyMusicExists = musicInPlaylistRepository.existsByMusicId(music.getId());
+        if (!alreadyMusicExists) {
+            // 재생 목록에 음악 추가
+            MusicInPlaylist musicInPlaylist = MusicInPlaylist.builder()
+                    .music(music)
+                    .playlist(playlist)
+                    .build();
+
+            musicInPlaylistRepository.save(musicInPlaylist);
+        }
+
         return CommonResponseDto.builder()
                 .success(true)
                 .build();
@@ -134,6 +141,7 @@ public class CustomerMusicService {
                     .musicId(music.getId())
                     .musicName(music.getName())
                     .artistName(music.getArtistName())
+                    .fileId(music.getMusicFile().getId())
                     .thumbnailImageUrl(music.getThumbnailImageUrl(GATEWAY_HOST))
                     .build();
         }).toList();

@@ -8,15 +8,20 @@ import org.springframework.data.domain.Sort;
 
 import java.util.Arrays;
 
-public class PageUtil {
+public class QueryUtil {
     public static Pageable getPage(Integer page, Integer limit, String orderBy, String orderDirection, String ...permittedOrderBys) {
-        Sort sort;
         if (page == null || page < 1) {
             page = 1;
         }
         if (limit == null || limit < 1) {
             limit = DefaultQuery.DEFAULT_LIMIT;
         }
+
+        return PageRequest.of(page - 1, limit, Sort.by(getOrder(orderBy, orderDirection, permittedOrderBys)));
+    }
+
+    public static Sort.Order getOrder(String orderBy, String orderDirection, String ...permittedOrderBys) {
+        Sort.Order order;
         if (orderBy == null) {
             if (permittedOrderBys != null && permittedOrderBys.length > 0) {
                 orderBy = permittedOrderBys[0];
@@ -33,14 +38,14 @@ public class PageUtil {
         }
 
         if (orderDirection == null || (!orderDirection.equalsIgnoreCase("asc") && !orderDirection.equalsIgnoreCase("desc"))) {
-            sort = Sort.by(Sort.Order.asc(orderBy));
+            order = Sort.Order.asc(orderBy);
         } else {
             if (orderDirection.equalsIgnoreCase("asc")) {
-                sort = Sort.by(Sort.Order.asc(orderBy));
+                order = Sort.Order.asc(orderBy);
             } else {
-                sort = Sort.by(Sort.Order.desc(orderBy));
+                order = Sort.Order.desc(orderBy);
             }
         }
-        return PageRequest.of(page - 1, limit, sort);
+        return order;
     }
 }

@@ -16,4 +16,6 @@ public interface MusicInPlaylistRepository extends JpaRepository<MusicInPlaylist
             "left join fetch m.thumbnailImageFile mt " +
             "where mp.playlist.id = :playlistId")
     List<MusicInPlaylist> findMusicsInPlaylist(Long playlistId);
+    // 플레이리스트에 음악이 있는 지 확인
+    boolean existsByMusicId(Long musicId);
 }
