@@ -15,6 +15,9 @@ public class Playlist extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = true)
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User owner;
 }

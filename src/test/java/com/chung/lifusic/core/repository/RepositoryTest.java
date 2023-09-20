@@ -47,8 +47,7 @@ public class RepositoryTest {
 
     @Test
     public void findMusicsInPlaylist() {
-        Pageable pageable = PageRequest.of(1, 5, Sort.by(Sort.Order.asc("music.name")));
-        Page<MusicInPlaylist> mps = musicInPlaylistRepository.findMusicsInPlaylist(1L, pageable);
+        List<MusicInPlaylist> mps = musicInPlaylistRepository.findMusicsInPlaylist(1L);
     }
 
     @Test

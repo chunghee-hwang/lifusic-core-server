@@ -1,17 +1,18 @@
 package com.chung.lifusic.core.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
-@Getter
-@NoArgsConstructor
+import java.util.List;
+
+@Builder
+@Data
 @AllArgsConstructor
-public class UserDto {
+@NoArgsConstructor
+public class PlaylistDto {
     private Long id;
-    private String email;
     private String name;
-    private String role;
+    private Long createdAt;
 }
