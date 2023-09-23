@@ -123,7 +123,7 @@ public class AdminMusicService {
         Pageable page = request.toPage("name");
         String keyword = request.getKeyword();
         Page<Music> musicsPage;
-        if (StringUtils.hasText(keyword)) {
+        if (!StringUtils.hasText(keyword)) {
             musicsPage = musicRepository.findMusics(artistId, page);
         } else {
             musicsPage = musicRepository.findMusics(artistId, keyword, page);
