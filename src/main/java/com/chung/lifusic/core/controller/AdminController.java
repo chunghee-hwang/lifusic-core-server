@@ -33,7 +33,7 @@ public class AdminController {
         // 파일 임시 저장
         FileDto musicTempFile = fileStorageService.storeFileToTempDirWithRandomName(musicFile);
         FileDto thumbnailTempFileDto = null;
-        if (!thumbnailImageFile.isEmpty()) {
+        if (thumbnailImageFile != null && !thumbnailImageFile.isEmpty()) {
             thumbnailTempFileDto = fileStorageService.storeFileToTempDirWithRandomName(thumbnailImageFile);
         }
 

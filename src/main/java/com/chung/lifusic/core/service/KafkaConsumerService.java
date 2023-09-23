@@ -36,7 +36,7 @@ public class KafkaConsumerService {
         }
 
         messagingTemplate.convertAndSend(
-                "/topic/post/admin/music" + response.getRequestUserId(),
+                "/topic/post/admin/music/" + response.getRequestUserId(),
                 CommonResponseDto.builder().success(isSuccess).build());
     }
 
@@ -46,7 +46,7 @@ public class KafkaConsumerService {
         FileDeleteResponseDto response = new ObjectMapper().readValue(record.value(), FileDeleteResponseDto.class);
 
         messagingTemplate.convertAndSend(
-                "/topic/delete/admin/music" + response.getRequestUserId(),
+                "/topic/delete/admin/music/" + response.getRequestUserId(),
                 CommonResponseDto.builder().success(response.isSuccess()).build()
         );
     }
