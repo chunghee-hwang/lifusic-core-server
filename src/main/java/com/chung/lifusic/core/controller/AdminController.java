@@ -69,13 +69,13 @@ public class AdminController {
     }
 
     @GetMapping(path = "/music/{musicId}/file", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    @AuthorizationValid(role=Role.ADMIN)
+//    @AuthorizationValid(role=Role.ADMIN)
     public void downloadMusicFile(
-            @AuthenticatedUser() UserDto authUser,
+//            @AuthenticatedUser() UserDto authUser,
             @PathVariable Long musicId,
             HttpServletResponse response
     ) {
-        this.adminMusicService.downloadMusicFile(authUser.getId(), musicId, response);
+        this.adminMusicService.downloadMusicFile(/*authUser.getId(), */musicId, response);
     }
 
     @GetMapping("/musics")

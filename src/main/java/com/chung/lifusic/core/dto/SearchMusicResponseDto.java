@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchMusicResponseDto {
-    private int totalPage;
+    private long allMusicSize;
     private int page;
     private List<Music> musics;
 

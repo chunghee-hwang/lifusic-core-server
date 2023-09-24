@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class GetArtistMusicsResponseDto {
-    private Integer totalPage; // 전체 페이지
+    private Long allMusicSize; // 전체 음악 개수
     private Integer page; // 현재 페이지
     private List<Music> musics;
 

@@ -29,6 +29,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -97,16 +99,16 @@ public class AdminMusicService {
         musicRepository.deleteAllByIdInBatch(musicIds);
     }
 
-    public void downloadMusicFile(Long authUserId, Long musicId, HttpServletResponse response) {
+    public void downloadMusicFile(/*Long authUserId, */Long musicId, HttpServletResponse response) {
         Music music = null;
         try {
             music = musicRepository.findById(musicId).orElseThrow();
         } catch (NoSuchElementException exception) {
             throw new NotFoundException("Music not found - musicId: " + musicId);
         }
-        if (!music.getArtist().getId().equals(authUserId)) {
-            throw new ForbiddenException();
-        }
+//        if (!music.getArtist().getId().equals(authUserId)) {
+//            throw new ForbiddenException();
+//        }
 
         File musicFile = music.getMusicFile();
         // Optional Accept header
@@ -117,8 +119,8 @@ public class AdminMusicService {
         ResponseExtractor<Void> responseExtractor = res -> {
             // Here I write the response to a file but do what you like
             InputStream io = res.getBody();
-
-            final String contentDisposition = "attachment; filename=\"" + musicFile.getOriginalFileName() + "\"";
+            final String fileName = URLEncoder.encode(musicFile.getOriginalFileName(), StandardCharsets.UTF_8);
+            final String contentDisposition = "attachment; filename=\"" + fileName + "\"";
             response.setHeader(HttpHeaders.CONTENT_DISPOSITION, contentDisposition);
             io.transferTo(response.getOutputStream());
             return null;
@@ -145,7 +147,7 @@ public class AdminMusicService {
         return GetArtistMusicsResponseDto.builder()
                 .musics(musics)
                 .page(musicsPage.getNumber() + 1)
-                .totalPage(musicsPage.getTotalPages())
+                .allMusicSize(musicsPage.getTotalElements())
                 .build();
     }
 }

@@ -57,7 +57,7 @@ public class CustomerMusicService {
         return SearchMusicResponseDto.builder()
                 .musics(musics)
                 .page(musicsPage.getNumber() + 1)
-                .totalPage(musicsPage.getTotalPages())
+                .allMusicSize(musicsPage.getTotalElements())
                 .build();
     }
 
