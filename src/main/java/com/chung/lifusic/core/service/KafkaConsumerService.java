@@ -39,15 +39,4 @@ public class KafkaConsumerService {
                 "/topic/post/admin/music/" + response.getRequestUserId(),
                 CommonResponseDto.builder().success(isSuccess).build());
     }
-
-    @KafkaListener(topics = "DELETE_FILE_COMPLETE", groupId = GROUP_ID)
-    @Transactional
-    public void consumeFileDeleteComplete(ConsumerRecord<String, String> record) throws JsonProcessingException {
-        FileDeleteResponseDto response = new ObjectMapper().readValue(record.value(), FileDeleteResponseDto.class);
-
-        messagingTemplate.convertAndSend(
-                "/topic/delete/admin/music/" + response.getRequestUserId(),
-                CommonResponseDto.builder().success(response.isSuccess()).build()
-        );
-    }
 }

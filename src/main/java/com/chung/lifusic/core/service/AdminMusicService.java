@@ -1,15 +1,15 @@
 package com.chung.lifusic.core.service;
 
 import com.chung.lifusic.core.dto.FileCreateResponseDto;
-import com.chung.lifusic.core.dto.SearchRequestDto;
 import com.chung.lifusic.core.dto.GetArtistMusicsResponseDto;
-import com.chung.lifusic.core.dto.MusicDto;
+import com.chung.lifusic.core.dto.SearchRequestDto;
 import com.chung.lifusic.core.entity.File;
 import com.chung.lifusic.core.entity.Music;
 import com.chung.lifusic.core.entity.User;
 import com.chung.lifusic.core.exception.ForbiddenException;
 import com.chung.lifusic.core.exception.NotFoundException;
 import com.chung.lifusic.core.repository.FileRepository;
+import com.chung.lifusic.core.repository.MusicInPlaylistRepository;
 import com.chung.lifusic.core.repository.MusicRepository;
 import com.chung.lifusic.core.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -38,6 +39,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class AdminMusicService {
     private final MusicRepository musicRepository;
+    private final MusicInPlaylistRepository musicInPlaylistRepository;
     private final UserRepository userRepository;
     private final FileRepository fileRepository;
     private final RestTemplate restTemplate;
@@ -70,23 +72,29 @@ public class AdminMusicService {
         musicRepository.save(music);
     }
 
-    public MusicDto getMusic(Long musicId) {
-        Music music = null;
-        try {
-            music = musicRepository.findById(musicId).orElseThrow();
-        } catch (NoSuchElementException exception) {
-            throw new NotFoundException("Music not found - musicId: " + musicId);
-        }
-
-        return MusicDto.builder()
-                .musicFileId(music.getMusicFile().getId())
-                .artistId(music.getArtist().getId())
-                .thumbnailFileId(music.getThumbnailImageFile() == null ? null : music.getThumbnailImageFile().getId())
-                .build();
+    /**
+     * 음악에 있는 음악 파일과 이미지 파일을 모두 가져온다.
+     * 카프카를 통해 파일 아이디 배열을 파일 서버로 넘기면 파일 서버에서 해당 파일들을 삭제한다.
+     */
+    public List<Long> getAllFileIdsInMusics(List<Long> musicIds) {
+        List<Music> musics = musicRepository.findMusicsByIds(musicIds);
+        List<Long> fileIds = new ArrayList<>();
+        musics.forEach(music -> {
+            File musicFile = music.getMusicFile();
+            File thumbnailFile = music.getThumbnailImageFile();
+            if (musicFile != null && musicFile.getId() != null) {
+                fileIds.add(musicFile.getId());
+            }
+            if (thumbnailFile != null && thumbnailFile.getId() != null) {
+                fileIds.add(thumbnailFile.getId());
+            }
+        });
+        return fileIds;
     }
 
-    public void deleteMusic(Long musicId) {
-        musicRepository.deleteById(musicId);
+    public void deleteMusics(List<Long> musicIds) {
+        musicInPlaylistRepository.deleteAllByMusicId(musicIds);
+        musicRepository.deleteAllByIdInBatch(musicIds);
     }
 
     public void downloadMusicFile(Long authUserId, Long musicId, HttpServletResponse response) {

@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface MusicRepository extends JpaRepository<Music, Long> {
     // 아티스트의 음악 목록 가져오기
     @Query(value = "select m from Music m " +
@@ -39,4 +41,11 @@ public interface MusicRepository extends JpaRepository<Music, Long> {
             "where m.artistName = :keyword or m.name like %:keyword%"
     )
     Page<Music> searchMusics(String keyword, Pageable page);
+
+    // 음악 아이디 배열로 음악 검색
+    @Query(value = "select m from Music m " +
+            "left join fetch m.musicFile mf " +
+            "left join fetch m.thumbnailImageFile tf " +
+            "where m.id in :musicIds")
+    List<Music> findMusicsByIds(List<Long> musicIds);
 }

@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "musicInPlaylist")
+@Table(name = "music_in_playlist")
 public class MusicInPlaylist extends BaseEntity{
 
     @Id

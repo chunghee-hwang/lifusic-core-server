@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -63,4 +64,15 @@ public class RepositoryTest {
         boolean isExist = musicInPlaylistRepository.existsByMusicId(1L);
         assertFalse(isExist);
     }
+
+    @Test
+    public void getMusicInPlaylistsByMusicIds() {
+        List<Long> musicInPlaylistIds = musicInPlaylistRepository.findMusicInPlaylistIdsByMusicIds(Arrays.asList(23L, 27L));
+        System.out.println(musicInPlaylistIds);
+    }
+//
+//    @Test
+//    public void deleteAllByMusicId() {
+//        musicInPlaylistRepository.deleteAllByMusicId(Arrays.asList(23L, 27L));
+//    }
 }

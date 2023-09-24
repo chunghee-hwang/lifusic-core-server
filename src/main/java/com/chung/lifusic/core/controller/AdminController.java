@@ -8,12 +8,16 @@ import com.chung.lifusic.core.service.AdminMusicService;
 import com.chung.lifusic.core.service.FileStorageService;
 import com.chung.lifusic.core.service.KafkaProducerService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -48,19 +52,18 @@ public class AdminController {
         return ResponseEntity.ok(CommonResponseDto.builder().success(true).build());
     }
 
-    @DeleteMapping("/music/{musicId}")
+    @PostMapping("/music/deleteBatch")
     @AuthorizationValid(role=Role.ADMIN)
-    public ResponseEntity<CommonResponseDto> deleteMusic(
-            @AuthenticatedUser() UserDto authUser,
-            @PathVariable Long musicId
+    @Transactional
+    public ResponseEntity<CommonResponseDto> deleteMusicsBatch(
+            @Valid @RequestBody DeleteArtistMusicsRequestDto request
     ) {
-        MusicDto music = adminMusicService.getMusic(musicId);
-        adminMusicService.deleteMusic(musicId);
+        List<Long> musicIds = request.getMusicIds();
+        List<Long> fileIds = adminMusicService.getAllFileIdsInMusics(musicIds);
+        adminMusicService.deleteMusics(musicIds);
         kafkaProducerService.produceDeleteFileRequest(FileDeleteRequestDto
                 .builder()
-                        .requestUserId(authUser.getId())
-                        .musicFileId(music.getMusicFileId())
-                        .thumbnailFileId(music.getThumbnailFileId())
+                        .fileIds(fileIds)
                 .build());
         return ResponseEntity.ok(CommonResponseDto.builder().success(true).build());
     }

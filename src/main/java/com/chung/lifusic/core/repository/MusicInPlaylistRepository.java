@@ -18,4 +18,12 @@ public interface MusicInPlaylistRepository extends JpaRepository<MusicInPlaylist
     List<MusicInPlaylist> findMusicsInPlaylist(Long playlistId);
     // 플레이리스트에 음악이 있는 지 확인
     boolean existsByMusicId(Long musicId);
+
+    @Query(value = "select id from music_in_playlist where music_id in :musicIds", nativeQuery = true)
+    List<Long> findMusicInPlaylistIdsByMusicIds(List<Long> musicIds);
+
+    // 음악 아이디 배열로 삭제
+    @Query(value = "delete from music_in_playlist " +
+            "where music_id in :musicIds", nativeQuery = true)
+    void deleteAllByMusicId(List<Long> musicIds);
 }
