@@ -142,7 +142,7 @@ public class AdminMusicService {
                 .builder()
                 .id(music.getId())
                 .name(music.getName())
-                .thumbnailImageUrl(music.getThumbnailImageUrl(GATEWAY_HOST))
+                .thumbnailImageUrl(music.getThumbnailImageUrl())
                 .build()).toList();
         return GetArtistMusicsResponseDto.builder()
                 .musics(musics)

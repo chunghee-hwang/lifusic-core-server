@@ -55,7 +55,7 @@ public class CustomerMusicService {
                 .musicName(music.getName())
                 .artistName(music.getArtistName())
                 .fileId(music.getMusicFile().getId())
-                .thumbnailImageUrl(music.getThumbnailImageUrl(GATEWAY_HOST))
+                .thumbnailImageUrl(music.getThumbnailImageUrl())
                 .build();
     }
 
@@ -76,7 +76,7 @@ public class CustomerMusicService {
                 .name(music.getName())
                 .artistName(music.getArtistName())
                 .musicFileId(music.getMusicFile().getId())
-                .thumbnailImageUrl(music.getThumbnailImageUrl(GATEWAY_HOST))
+                .thumbnailImageUrl(music.getThumbnailImageUrl())
                 .build()).toList();
         return SearchMusicResponseDto.builder()
                 .musics(musics)
@@ -177,7 +177,7 @@ public class CustomerMusicService {
                     .musicName(music.getName())
                     .artistName(music.getArtistName())
                     .fileId(music.getMusicFile().getId())
-                    .thumbnailImageUrl(music.getThumbnailImageUrl(GATEWAY_HOST))
+                    .thumbnailImageUrl(music.getThumbnailImageUrl())
                     .build();
         }).toList();
     }

@@ -34,7 +34,7 @@ public class Music extends BaseEntity{
     @OneToOne(fetch=FetchType.LAZY)
     private File thumbnailImageFile;
 
-    public String getThumbnailImageUrl(String gatewayHost) {
+    public String getThumbnailImageUrl() {
         if (this.thumbnailImageFile == null) {
             return null;
         }
@@ -42,6 +42,6 @@ public class Music extends BaseEntity{
         if (fileId == null) {
             return null;
         }
-        return gatewayHost + "/api/file/" + fileId;
+        return "/api/file/" + fileId;
     }
 }
