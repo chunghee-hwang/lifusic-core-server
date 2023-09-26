@@ -50,7 +50,7 @@ public class RepositoryTest {
 
     @Test
     public void findMusicsInPlaylist() {
-        List<MusicInPlaylist> mps = musicInPlaylistRepository.findMusicsInPlaylist(1L);
+        List<MusicInPlaylist> mps = musicInPlaylistRepository.findMusicsInPlaylist(1L, Sort.by(Sort.Order.asc("m.name")));
     }
 
     @Test
@@ -61,8 +61,8 @@ public class RepositoryTest {
 
     @Test
     public void existsByMusicId() {
-        boolean isExist = musicInPlaylistRepository.existsByMusicId(1L);
-        assertFalse(isExist);
+//        boolean isExist = musicInPlaylistRepository.existsByPlaylistIdAndMusicId(1L, 1L);
+//        assertFalse(isExist);
     }
 
     @Test

@@ -19,6 +19,17 @@ public class CustomerController {
     private final CustomerMusicService customerMusicService;
 
     /**
+     * 음악 하나 찾기
+     */
+    @GetMapping("/{musicId}")
+    @AuthorizationValid(role=Role.CUSTOMER)
+    public ResponseEntity<GetMusicResponseDto> findMusic(
+            @PathVariable Long musicId
+    ) {
+        return ResponseEntity.ok(customerMusicService.getMusic(musicId));
+    }
+
+    /**
      * 음악 검색
      */
     @GetMapping("/list")
@@ -69,9 +80,10 @@ public class CustomerController {
     @GetMapping("/playlist/{playlistId}")
     @AuthorizationValid(role=Role.CUSTOMER)
     public ResponseEntity<List<MusicInPlaylistDto>> getMusicsInPlaylist(
-            @PathVariable Long playlistId
+            @PathVariable Long playlistId,
+            SortRequestDto sortRequest
     ) {
-        return ResponseEntity.ok(customerMusicService.getAllMusicInPlaylist(playlistId));
+        return ResponseEntity.ok(customerMusicService.getAllMusicInPlaylist(playlistId, sortRequest));
     }
 
     @PostMapping("/playlist/batchDeleteMusics")

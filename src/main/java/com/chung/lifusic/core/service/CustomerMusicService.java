@@ -12,6 +12,7 @@ import com.chung.lifusic.core.repository.MusicInPlaylistRepository;
 import com.chung.lifusic.core.repository.MusicRepository;
 import com.chung.lifusic.core.repository.PlaylistRepository;
 import com.chung.lifusic.core.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 
 @Service
@@ -35,6 +37,27 @@ public class CustomerMusicService {
     private final MusicInPlaylistRepository musicInPlaylistRepository;
     @Value("${host.server.gateway}")
     private String GATEWAY_HOST;
+
+    /**
+     * 음악 하나 찾기
+     * @param musicId 찾으려는 음악 아이디
+     */
+    public GetMusicResponseDto getMusic(Long musicId) {
+        Music music;
+        try {
+            music = musicRepository.findMusic(musicId).orElseThrow();
+        } catch (NoSuchElementException exception) {
+            throw new NotFoundException();
+        }
+
+        return GetMusicResponseDto.builder()
+                .musicId(music.getId())
+                .musicName(music.getName())
+                .artistName(music.getArtistName())
+                .fileId(music.getMusicFile().getId())
+                .thumbnailImageUrl(music.getThumbnailImageUrl(GATEWAY_HOST))
+                .build();
+    }
 
     /*
      * 고객이 음악 검색
@@ -52,6 +75,7 @@ public class CustomerMusicService {
                 .id(music.getId())
                 .name(music.getName())
                 .artistName(music.getArtistName())
+                .musicFileId(music.getMusicFile().getId())
                 .thumbnailImageUrl(music.getThumbnailImageUrl(GATEWAY_HOST))
                 .build()).toList();
         return SearchMusicResponseDto.builder()
@@ -80,12 +104,15 @@ public class CustomerMusicService {
         return CreatePlaylistResponseDto.builder()
                 .playlistId(playlist.getId())
                 .name(playlist.getName())
+                .createdAt(playlist.getCreatedDate())
+                .updatedAt(playlist.getUpdatedDate())
                 .build();
     }
 
     /**
      * 고객의 모든 플레이리스트 가져오기
      */
+    @Transactional()
     public List<PlaylistDto> getAllPlaylist(Long userId) {
         List<Playlist> playlists = playlistRepository.getPlaylistsByOwnerId(userId);
         return playlists.stream().map(playlist -> PlaylistDto.builder()
@@ -113,7 +140,7 @@ public class CustomerMusicService {
         }
 
         // 이미 재생 목록에 있는 음악인 지 확인. 있으면 추가 안 함
-        boolean alreadyMusicExists = musicInPlaylistRepository.existsByMusicId(music.getId());
+        boolean alreadyMusicExists = musicInPlaylistRepository.existsByPlaylistIdAndMusicId(playlist.getId(), music.getId());
         if (!alreadyMusicExists) {
             // 재생 목록에 음악 추가
             MusicInPlaylist musicInPlaylist = MusicInPlaylist.builder()
@@ -132,8 +159,16 @@ public class CustomerMusicService {
     /**
      * 플레이리스트에 들은 모든 음악 목록 가져오기
      */
-    public List<MusicInPlaylistDto> getAllMusicInPlaylist(Long playlistId) {
-        List<MusicInPlaylist> musicsInPlaylist = musicInPlaylistRepository.findMusicsInPlaylist(playlistId);
+    public List<MusicInPlaylistDto> getAllMusicInPlaylist(Long playlistId, SortRequestDto sortRequest) {
+        Sort.Order order = sortRequest.toOrder("name", "artistName");
+        String orderProperty = "m." + order.getProperty();
+        Sort sort;
+        if (order.isAscending()) {
+            sort = Sort.by(orderProperty).ascending();
+        } else {
+            sort = Sort.by(orderProperty).descending();
+        }
+        List<MusicInPlaylist> musicsInPlaylist = musicInPlaylistRepository.findMusicsInPlaylist(playlistId, sort);
         return musicsInPlaylist.stream().map(musicInPlaylist -> {
             Music music = musicInPlaylist.getMusic();
             return MusicInPlaylistDto.builder()

@@ -19,6 +19,7 @@ public class SearchMusicResponseDto {
         private Long id;
         private String name;
         private String artistName;
+        private Long musicFileId;
         private String thumbnailImageUrl;
     }
 }
