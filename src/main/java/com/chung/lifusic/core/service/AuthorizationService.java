@@ -20,8 +20,8 @@ import org.springframework.web.client.RestTemplate;
 public class AuthorizationService {
     private final RestTemplate restTemplate;
 
-    @Value("${host.server.account}")
-    private String accountServerHost;
+    @Value("${host.server.gateway}")
+    private String GATEWAY_HOST;
     public boolean checkAuthorization(HttpServletRequest request, Role requiredRole) {
         final UserDto userDto = getAuthenticatedUser(request);
         if (userDto == null) {
@@ -42,7 +42,7 @@ public class AuthorizationService {
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<UserDto> responseEntity = restTemplate.exchange(accountServerHost + "/api/account/me", HttpMethod.GET, entity, UserDto.class);
+            ResponseEntity<UserDto> responseEntity = restTemplate.exchange(GATEWAY_HOST + "/api/account/me", HttpMethod.GET, entity, UserDto.class);
             return responseEntity.getBody();
         } catch (Exception exception) {
             log.error("fail to fetch user data: {}", exception.getMessage());

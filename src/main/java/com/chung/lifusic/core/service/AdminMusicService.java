@@ -46,9 +46,6 @@ public class AdminMusicService {
     private final FileRepository fileRepository;
     private final RestTemplate restTemplate;
 
-    @Value("${host.server.file}")
-    private String FILE_SERVER_HOST;
-
     @Value("${host.server.gateway}")
     private String GATEWAY_HOST;
 
@@ -126,7 +123,7 @@ public class AdminMusicService {
             return null;
         };
         // file 서버에서 파일을 가져옴
-        restTemplate.execute(URI.create(this.FILE_SERVER_HOST + "/api/file/" + musicFile.getId()), HttpMethod.GET, requestCallback, responseExtractor);
+        restTemplate.execute(URI.create(this.GATEWAY_HOST + "/api/file/" + musicFile.getId()), HttpMethod.GET, requestCallback, responseExtractor);
     }
 
     public GetArtistMusicsResponseDto getMusicsByArtistId(Long artistId, SearchRequestDto request) {
