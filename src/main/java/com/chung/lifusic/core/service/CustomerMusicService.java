@@ -35,8 +35,6 @@ public class CustomerMusicService {
     private final PlaylistRepository playlistRepository;
     private final UserRepository userRepository;
     private final MusicInPlaylistRepository musicInPlaylistRepository;
-    @Value("${host.server.gateway}")
-    private String GATEWAY_HOST;
 
     /**
      * 음악 하나 찾기
