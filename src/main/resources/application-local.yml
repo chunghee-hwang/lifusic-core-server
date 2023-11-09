@@ -36,7 +36,7 @@ logging:
     sql: error # error: Display when error occur
     org.hibernate: error
     org.springframework: error
-    com.chung.lifusic.core: info
+    com.chung.lifusic.musicservice: info
 
 host:
   server:
