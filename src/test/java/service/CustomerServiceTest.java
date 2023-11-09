@@ -1,15 +1,15 @@
 package service;
 
-import com.chung.lifusic.core.common.enums.Role;
-import com.chung.lifusic.core.dto.*;
-import com.chung.lifusic.core.entity.*;
-import com.chung.lifusic.core.exception.ForbiddenException;
-import com.chung.lifusic.core.exception.NotFoundException;
-import com.chung.lifusic.core.repository.MusicInPlaylistRepository;
-import com.chung.lifusic.core.repository.MusicRepository;
-import com.chung.lifusic.core.repository.PlaylistRepository;
-import com.chung.lifusic.core.repository.UserRepository;
-import com.chung.lifusic.core.service.CustomerMusicService;
+import com.chung.lifusic.musicservice.common.enums.Role;
+import com.chung.lifusic.musicservice.dto.*;
+import com.chung.lifusic.musicservice.entity.*;
+import com.chung.lifusic.musicservice.exception.ForbiddenException;
+import com.chung.lifusic.musicservice.exception.NotFoundException;
+import com.chung.lifusic.musicservice.repository.MusicInPlaylistRepository;
+import com.chung.lifusic.musicservice.repository.MusicRepository;
+import com.chung.lifusic.musicservice.repository.PlaylistRepository;
+import com.chung.lifusic.musicservice.repository.UserRepository;
+import com.chung.lifusic.musicservice.service.CustomerMusicService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

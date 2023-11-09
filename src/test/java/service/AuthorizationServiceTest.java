@@ -1,8 +1,8 @@
 package service;
 
-import com.chung.lifusic.core.common.enums.Role;
-import com.chung.lifusic.core.dto.UserDto;
-import com.chung.lifusic.core.service.AuthorizationService;
+import com.chung.lifusic.musicservice.common.enums.Role;
+import com.chung.lifusic.musicservice.dto.UserDto;
+import com.chung.lifusic.musicservice.service.AuthorizationService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
